@@ -17,8 +17,6 @@ jobs:
         build:
           - os: ubuntu-24.04
             cmake: ""
-          - os: windows-2022
-            cmake: ""
           - os: macos-15
             cmake: ""
 
