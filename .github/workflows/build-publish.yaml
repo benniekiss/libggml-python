@@ -36,7 +36,9 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
           CIBW_REPAIR_WHEEL_COMMAND: ""
-        run: python -m cibuildwheel --output-dir wheelhouse
+        run: |
+          ls -la
+          python -m cibuildwheel --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v4
         with:
