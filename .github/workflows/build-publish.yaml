@@ -29,7 +29,6 @@ jobs:
       - name: build wheels
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
-          CIBW_REPAIR_WHEEL_COMMAND: ""
           CIBW_BUILD: cp313-*
           CIBW_ENVIRONMENT_PASS_LINUX: CMAKE_ARGS
         uses: pypa/cibuildwheel@v3.0.1
