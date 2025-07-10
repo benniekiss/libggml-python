@@ -32,7 +32,6 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND: ""
           CIBW_BUILD: cp313-*
           CIBW_ENVIRONMENT_PASS_LINUX: CMAKE_ARGS
-          CIBW_BEFORE_ALL: "ls -la /project"
         uses: pypa/cibuildwheel@v3.0.1
 
       - name: publish wheels
