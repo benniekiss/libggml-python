@@ -31,6 +31,8 @@ jobs:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
           CIBW_BUILD: cp313-*
           CIBW_ENVIRONMENT_PASS_LINUX: CMAKE_ARGS
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair --exclude libggml-* -w {dest_dir} {wheel}"
         uses: pypa/cibuildwheel@v3.0.1
 
       - name: publish wheels
