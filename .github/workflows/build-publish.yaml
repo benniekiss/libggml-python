@@ -19,6 +19,8 @@ jobs:
             cmake: ""
           - os: macos-15
             cmake: ""
+          - os: windows-2022
+            cmake: ""
 
     steps:
       - name: checkout
@@ -29,6 +31,7 @@ jobs:
       - name: build wheels
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
+          CIBW_ARCHS: auto64
           CIBW_BUILD: cp313-*
           CIBW_ENVIRONMENT_PASS_LINUX: CMAKE_ARGS
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: ""
