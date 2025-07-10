@@ -1,6 +1,7 @@
 name: Build and Publish Python Wheels
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
