@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.15)
-project(ggml-python LANGUAGES C CXX)
+project(libggml LANGUAGES C CXX)
 
 add_subdirectory(ggml)

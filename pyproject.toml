@@ -1,5 +1,5 @@
 [project]
-name = "ggml"
+name = "libggml-python"
 version = "0.1.0"
 description = "Prebuilt ggml libraries"
 authors = [
@@ -23,12 +23,12 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 minimum-version = "build-system.requires"
 cmake.build-type = "Release"
-wheel.packages = ["src/ggml"]
-wheel.install-dir = "ggml"
+wheel.packages = ["src/libggml"]
+wheel.install-dir = "libggml"
 sdist.include = ["ggml/"]
 
 [tool.scikit-build.cmake.define]
 CMAKE_RUNTIME_OUTPUT_DIRECTORY = "build"
 
-[project.entry-points."cmake.root"]
-ggml = "ggml"
+[project.entry-points."cmake.prefix"]
+ggml = "libggml"
