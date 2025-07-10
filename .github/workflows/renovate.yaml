@@ -1,0 +1,30 @@
+name: Renovate Schedule
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log Level'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+          - warning
+  schedule:
+    - cron: '0 8 */1 * *'
+
+env:
+    LOG_LEVEL: ${{ inputs.logLevel }}
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: run renovate
+        env:
+          RENOVATE_REPOSITORIES: ${{ vars.RENOVATE_REPOSITORIES }}
+        uses: renovatebot/github-action@v43.0.2
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}

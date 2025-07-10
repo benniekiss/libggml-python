@@ -1,0 +1,88 @@
+name: Build and Publish Python Wheels
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build wheels on ${{ matrix.build.os }}
+    runs-on: ${{ matrix.build.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        build:
+          - os: ubuntu-24.04
+            cmake: ""
+          - os: macos-15
+            cmake: ""
+          - os: windows-2022
+            cmake: ""
+        python: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: build sdist
+        run: |
+          echo "Building sdist for Python"
+          uv build --sdist -o wheelhouse/ .
+
+      - name: build wheels
+        env:
+          CMAKE_ARGS: ${{ matrix.build.cmake }}
+        run: |
+          echo "Building wheels for Python ${{ matrix.python }}"
+          uv build --wheel -o dist/ .
+
+      - name: repair wheels (linux)
+        if: matrix.build.os == 'ubuntu-24.04'
+        run: |
+          uvx auditwheel repair --exclude libggml* -w wheelhouse/ dist/*
+
+      - name: repair wheels (macos)
+        if: matrix.build.os == 'macos-15'
+        run: |
+          uvx --from delocate delocate-wheel --exclude libggml* --require-archs arm64 -w wheelhouse/ -v dist/*
+
+      - name: repair wheels (windows)
+        if: matrix.build.os == 'windows-2022'
+        run: |
+          uvx delvewheel repair --ignore-existing -w wheelhouse/ dist/*
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: base-${{ matrix.build.os }}-${{ matrix.python }}-${{ strategy.job-index }}
+          path: wheelhouse/*
+
+  upload_pypi:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: base-*
+          path: dist
+          merge-multiple: true
+
+      - name: publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/

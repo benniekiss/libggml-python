@@ -1,0 +1,37 @@
+[project]
+name = "libggml-python"
+version = "0.2.0"
+description = "Prebuilt ggml libraries"
+authors = [
+  { name = "benniekiss" }
+]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+
+[project.urls]
+Source = "https://github.com/benniekiss/libggml-python"
+Tracker = "https://github.com/benniekiss/libggml-python/issues"
+Upstream = "https://github.com/ggml-org/ggml"
+
+[build-system]
+requires = [
+  "scikit-build-core>=0.11.5",
+]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.build-type = "Release"
+wheel.packages = ["src/libggml"]
+wheel.install-dir = "libggml"
+sdist.include = ["ggml/"]
+
+[tool.scikit-build.cmake.define]
+CMAKE_RUNTIME_OUTPUT_DIRECTORY = "build"
+
+[project.entry-points."cmake.root"]
+ggml = "libggml"
+
+[project.entry-points."cmake.prefix"]
+ggml = "libggml"
