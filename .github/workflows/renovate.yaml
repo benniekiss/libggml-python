@@ -1,4 +1,4 @@
-name: "Renovate Schedule"
+name: Renovate Schedule
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: run renovate
         env:
-          RENOVATE_REPOSITORIES: "[\"benniekiss/libggml-python\"]"
+          RENOVATE_REPOSITORIES: ${{ vars.RENOVATE_REPOSITORIES }}
         uses: renovatebot/github-action@v43.0.2
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
