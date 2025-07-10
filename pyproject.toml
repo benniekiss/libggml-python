@@ -24,5 +24,8 @@ build-backend = "scikit_build_core.build"
 minimum-version = "build-system.requires"
 cmake.build-type = "Release"
 wheel.packages = ["src/libggml"]
-wheel.exclude = ["lib/**"]
+wheel.exclude = ["lib/**", "include/**"]
 sdist.include = ["ggml/"]
+
+[tool.scikit-build.cmake.define]
+CMAKE_RUNTIME_OUTPUT_DIRECTORY = "build"
