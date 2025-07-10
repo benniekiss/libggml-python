@@ -23,25 +23,19 @@ jobs:
             cmake: ""
 
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install cibuildwheel
-        run: |
-          python -m pip install cibuildwheel==3.0.1
-
-      - name: Build wheels
+      - name: build wheels
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
           CIBW_REPAIR_WHEEL_COMMAND: ""
         uses: pypa/cibuildwheel@v3.0.1
 
-      - uses: actions/upload-artifact@v4
+      - name: publish wheels
+        uses: actions/upload-artifact@v4
         with:
           name: cibw-wheels-${{ matrix.build.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
