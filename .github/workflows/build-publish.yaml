@@ -1,0 +1,38 @@
+name: Build and Publish Python Wheels
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.build.os }}
+    runs-on: ${{ matrix.build.os }}
+    strategy:
+      matrix:
+        build:
+          - os: ubuntu-24.04
+            cmake: ""
+          - os: windows-2022
+            cmake: ""
+          - os: macos-15
+            cmake: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==3.0.1
+
+      - name: Build wheels
+        env:
+          CMAKE_ARGS: ${{ matrix.build.cmake }}
+        run: python -m cibuildwheel --output-dir wheelhouse
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.build.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
