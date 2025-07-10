@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 [project.urls]
 Source = "https://github.com/benniekiss/ggml-python"
 Tracker = "https://github.com/benniekiss/ggml-python/issues"
-ggml-org/ggml = "https://github.com/ggml-org/ggml"
+Upstream = "https://github.com/ggml-org/ggml"
 
 [build-system]
 requires = [
