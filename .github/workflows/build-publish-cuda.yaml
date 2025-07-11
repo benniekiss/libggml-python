@@ -34,8 +34,8 @@ jobs:
 
       # https://learn.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
       - name: setup windows
-        if: ${{ matrix.build.os }} == 'windows-2022'
-        shell: cmd /S /C
+        if: matrix.build.os == 'windows-2022'
+        shell: cmd
         run: |
           # Download the Build Tools bootstrapper.
           curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe `
