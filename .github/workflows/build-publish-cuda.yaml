@@ -35,14 +35,14 @@ jobs:
           cache-environment: true
           cache-downloads: false
           environment-name: ci
-          create-args: |
+          create-args: >-
             git
             uv
             cmake
             cxx-compiler
             cuda==${{ env.CUDA_VERSION }}
             cuda-nvcc
-          init-shell: |
+          init-shell: >-
             bash
             powershell
           post-cleanup: 'all'

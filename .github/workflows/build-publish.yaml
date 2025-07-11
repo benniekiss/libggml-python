@@ -36,12 +36,12 @@ jobs:
           cache-environment: true
           cache-downloads: false
           environment-name: ci
-          create-args: |
+          create-args: >-
             git
             uv
             cmake
             cxx-compiler
-          init-shell: |
+          init-shell: >-
             bash
             zsh
             powershell
