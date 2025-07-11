@@ -16,10 +16,10 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
-            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc
+            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
           - os: windows-2022
-            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc
+            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
 
     defaults:
@@ -38,6 +38,10 @@ jobs:
           cache-downloads: false
           environment-name: ci
           create-args: ${{ matrix.build.mamba }}
+          condarc: |
+            channels:
+              - nvidia
+              - conda-forge
           init-shell: bash
           post-cleanup: all
 
