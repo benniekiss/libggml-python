@@ -16,7 +16,7 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
-            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
+            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cudatoolkit
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
           - os: windows-2022
             mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
@@ -31,6 +31,27 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      # https://learn.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+      - name: setup windows
+        if: ${{ matrix.build.os }} == 'windows-2022'
+        shell: cmd /S /C
+        run: |
+          # Download the Build Tools bootstrapper.
+          curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe `
+          `
+          # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
+          && (start /w vs_buildtools.exe --quiet --wait --norestart --nocache `
+              --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" `
+              --add Microsoft.VisualStudio.Workload.AzureBuildTools `
+              --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
+              --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
+              --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
+              --remove Microsoft.VisualStudio.Component.Windows81SDK `
+              || IF "%ERRORLEVEL%"=="3010" EXIT 0) `
+          `
+          # Cleanup
+          && del /q vs_buildtools.exe
 
       - uses: mamba-org/setup-micromamba@v2
         with:
