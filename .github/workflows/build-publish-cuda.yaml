@@ -1,4 +1,4 @@
-name: Build and Publish Python Wheels
+name: Build and Publish Python Wheels (CUDA)
 
 on:
   workflow_dispatch:
@@ -16,11 +16,9 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
-            cmake: ""
-          - os: macos-15
-            cmake: ""
+            cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
           - os: windows-2022
-            cmake: ""
+            cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
 
     steps:
       - name: checkout
@@ -38,9 +36,10 @@ jobs:
             uv
             cmake
             cxx-compiler
+            cuda==12.8.1
+            cuda-nvcc
           init-shell: |
             bash
-            zsh
             powershell
           post-cleanup: 'all'
 
@@ -53,7 +52,7 @@ jobs:
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.build.os }}-${{ strategy.job-index }}
+          name: cuda-${{ matrix.build.os }}-${{ strategy.job-index }}
           path: dist/*
 
   upload_pypi:
@@ -67,7 +66,7 @@ jobs:
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: cibw-*
+          pattern: cuda-*
           path: dist
           merge-multiple: true
 
