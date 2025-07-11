@@ -48,7 +48,7 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
-          versions=${{ vars.PYTHON_VERSIONS }}
+          versions="${{ vars.PYTHON_VERSIONS }}"
 
           for ver in "${versions}"; do
             echo "Building wheels for Python ${ver}"
