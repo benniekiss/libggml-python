@@ -6,9 +6,6 @@ on:
     tags:
       - 'v*'
 
-env:
-  PYTHON_VERSIONS: "3.10 3.11 3.12 3.13"
-
 jobs:
   build:
     name: Build wheels on ${{ matrix.build.os }}
@@ -51,7 +48,7 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
-          for ver in ${{ env.PYTHON_VERSIONS }}; do
+          for ver in ${{ vars.PYTHON_VERSIONS }}; do
             echo "Building wheels for Python ${ver}"
 
             uv build --python "${ver}" .
