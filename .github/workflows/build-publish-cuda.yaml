@@ -16,7 +16,7 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
-            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cudatoolkit
+            mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
           - os: windows-2022
             mamba: git uv cmake cxx-compiler cuda==${{ vars.CUDA_VERSION }} cuda-nvcc cuda-toolkit
@@ -33,23 +33,20 @@ jobs:
           submodules: recursive
 
       # https://learn.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
-      - name: setup windows
+      - name: setup windows build tools
         if: matrix.build.os == 'windows-2022'
         shell: cmd
         run: |
-          `
-          curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe `
-          `
-          && (start /w vs_buildtools.exe --quiet --wait --norestart --nocache `
-              --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" `
-              --add Microsoft.VisualStudio.Workload.AzureBuildTools `
-              --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
-              --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
-              --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
-              --remove Microsoft.VisualStudio.Component.Windows81SDK `
-              || IF "%ERRORLEVEL%"=="3010" EXIT 0) `
-          `
-          && del /q vs_buildtools.exe
+          curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe && ^
+          start /wait vs_buildtools.exe --quiet --wait --norestart --nocache ^
+            --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" ^
+            --add Microsoft.VisualStudio.Workload.AzureBuildTools ^
+            --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 ^
+            --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 ^
+            --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 ^
+            --remove Microsoft.VisualStudio.Component.Windows81SDK ^
+          || IF "%ERRORLEVEL%"=="3010" EXIT 0 && ^
+          del /q vs_buildtools.exe
 
       - uses: mamba-org/setup-micromamba@v2
         with:
