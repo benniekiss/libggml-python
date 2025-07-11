@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  CUDA_VERSION: "12.8.1"
+
 jobs:
   build:
     name: Build wheels on ${{ matrix.build.os }}
@@ -36,7 +39,7 @@ jobs:
             uv
             cmake
             cxx-compiler
-            cuda==12.8.1
+            cuda==${{ env.CUDA_VERSION }}
             cuda-nvcc
           init-shell: |
             bash
@@ -47,7 +50,7 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
-          uv build .
+          uv build . -Cwheel.build-tag="1cu${{ env.CUDA_VERSION }}"
 
       - name: upload artifacts
         uses: actions/upload-artifact@v4
