@@ -1,6 +1,6 @@
 [project]
 name = "libggml-python"
-version = "0.1.2"
+version = "0.2.0"
 description = "Prebuilt ggml libraries"
 authors = [
   { name = "benniekiss" }
