@@ -24,6 +24,9 @@ jobs:
             cmake: ""
           - os: windows-2022
             cmake: ""
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
 
     steps:
       - name: checkout
