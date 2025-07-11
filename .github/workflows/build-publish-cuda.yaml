@@ -20,8 +20,10 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
+            mamba: git uv cmake cxx-compiler cuda==${{ env.CUDA_VERSION }} cuda-nvcc
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
           - os: windows-2022
+            mamba: git uv cmake cxx-compiler cuda==${{ env.CUDA_VERSION }} cuda-nvcc
             cmake: "-DGGML_CUDA=ON -DGGML_CUDA_FORCE_MMQ=ON"
     defaults:
       run:
@@ -38,16 +40,8 @@ jobs:
           cache-environment: true
           cache-downloads: false
           environment-name: ci
-          create-args: >-
-            git
-            uv
-            cmake
-            cxx-compiler
-            cuda==${{ env.CUDA_VERSION }}
-            cuda-nvcc
-          init-shell: >-
-            bash
-            powershell
+          create-args: ${{ matrix.build.mamba }}
+          init-shell: bash
           post-cleanup: 'all'
 
       - name: build wheels and sdist
@@ -55,6 +49,8 @@ jobs:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
           for ver in ${{ env.PYTHON_VERSIONS }}; do
+            echo "Building wheels for Python ${ver}"
+
             uv build --python "${ver}" . -Cwheel.build-tag="1cu${{ env.CUDA_VERSION }}"
           done
 

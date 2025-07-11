@@ -19,10 +19,14 @@ jobs:
       matrix:
         build:
           - os: ubuntu-24.04
+            mamba: git uv cmake cxx-compiler
             cmake: ""
           - os: macos-15
+            # use system clang
+            mamba: git uv cmake
             cmake: ""
           - os: windows-2022
+            mamba: git uv cmake cxx-compiler
             cmake: ""
     defaults:
       run:
@@ -39,15 +43,8 @@ jobs:
           cache-environment: true
           cache-downloads: false
           environment-name: ci
-          create-args: >-
-            git
-            uv
-            cmake
-            cxx-compiler
-          init-shell: >-
-            bash
-            zsh
-            powershell
+          create-args: ${{ matrix.build.mamba }}
+          init-shell: bash
           post-cleanup: 'all'
 
       - name: build wheels and sdist
@@ -55,6 +52,8 @@ jobs:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
           for ver in ${{ env.PYTHON_VERSIONS }}; do
+            echo "Building wheels for Python ${ver}"
+
             uv build --python "${ver}" .
           done
 
