@@ -57,7 +57,7 @@ jobs:
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.build.os }}-${{ strategy.job-index }}
+          name: base-${{ matrix.build.os }}-${{ strategy.job-index }}
           path: dist/*
 
   upload_pypi:
@@ -71,7 +71,7 @@ jobs:
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: cibw-*
+          pattern: base-*
           path: dist
           merge-multiple: true
 
