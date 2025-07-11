@@ -30,5 +30,8 @@ sdist.include = ["ggml/"]
 [tool.scikit-build.cmake.define]
 CMAKE_RUNTIME_OUTPUT_DIRECTORY = "build"
 
+[project.entry-points."cmake.root"]
+ggml = "libggml"
+
 [project.entry-points."cmake.prefix"]
 ggml = "libggml"
