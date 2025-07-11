@@ -44,8 +44,9 @@ jobs:
       - name: build wheels and sdist
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
+          PYTHON_VERSIONS: ${{ vars.PYTHON_VERSIONS }}
         run: |
-          for ver in ${{ vars.PYTHON_VERSIONS }} ; do
+          for ver in ${{ env.PYTHON_VERSIONS }}; do
             echo "Building wheels for Python ${ver} (CUDA ${{ vars.CUDA_VERSION }})"
 
             uv build --python "${ver}" . -Cwheel.build-tag="1cu${{ vars.CUDA_VERSION }}"
