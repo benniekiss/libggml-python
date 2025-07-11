@@ -37,6 +37,7 @@ jobs:
         if: matrix.build.os == 'windows-2022'
         shell: cmd
         run: |
+          `
           curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe `
           `
           && (start /w vs_buildtools.exe --quiet --wait --norestart --nocache `
