@@ -48,17 +48,36 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.build.cmake }}
         run: |
+          echo "Building sdist for Python"
+
+          uv build --sdist --python "${ver}" -o wheelhouse/ .
+
           for ver in ${{ vars.PYTHON_VERSIONS }}; do
             echo "Building wheels for Python ${ver}"
 
-            uv build --python "${ver}" .
+            uv build --wheel --python "${ver}" -o dist/ .
           done
+
+      - name: repair wheels (linux)
+        if: matrix.build.os == 'ubuntu-24.04'
+        run: |
+          uvx auditwheel repair --exclude libggml* -w wheelhouse/ dist/*
+
+      - name: repair wheels (macos)
+        if: matrix.build.os == 'macos-15'
+        run: |
+          uvx delocate-wheel --require-archs arm64 -w wheelhouse/ -v dist/*
+
+      - name: repair wheels (windows)
+        if: matrix.build.os == 'windows-2022'
+        run: |
+          uvx delvewheel repair --ignore-existing -w wheelhouse/ dist/*
 
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: base-${{ matrix.build.os }}-${{ strategy.job-index }}
-          path: dist/*
+          path: wheelhouse/*
 
   upload_pypi:
     needs: build
