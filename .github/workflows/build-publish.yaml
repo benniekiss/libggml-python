@@ -66,7 +66,7 @@ jobs:
       - name: repair wheels (macos)
         if: matrix.build.os == 'macos-15'
         run: |
-          uvx delocate-wheel --require-archs arm64 -w wheelhouse/ -v dist/*
+          uvx --from delocate delocate-wheel --exclude libggml* --require-archs arm64 -w wheelhouse/ -v dist/*
 
       - name: repair wheels (windows)
         if: matrix.build.os == 'windows-2022'
