@@ -7,80 +7,67 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    name: Build wheels on ${{ matrix.build.os }}
-    runs-on: ${{ matrix.build.os }}
+  build_wheels:
+    name: Build wheels for ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: false
-      max-parallel: 3
       matrix:
-        build:
-          - os: ubuntu-24.04
-            cmake: ""
-          - os: macos-15
-            cmake: ""
-          - os: windows-2022
-            cmake: ""
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: linux-intel
+            runs-on: ubuntu-latest
+          - os: linux-arm
+            runs-on: ubuntu-24.04-arm
+          - os: windows-intel
+            runs-on: windows-latest
+          - os: windows-arm
+            runs-on: windows-11-arm
+          - os: macos-arm
+            runs-on: macos-latest
 
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          submodules: "recursive"
+          submodules: recursive
 
-      - name: setup uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: build sdist
-        run: |
-          echo "Building sdist for Python"
-          uv build --sdist -o wheelhouse/ .
-
-      - name: build wheels
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v3.0.1
         env:
-          CMAKE_ARGS: ${{ matrix.build.cmake }}
-        run: |
-          echo "Building wheels for Python ${{ matrix.python }}"
-          uv build --wheel -o dist/ .
+          CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: auditwheel repair --exclude libggml* -w wheelhouse/ dist/*
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: delocate-wheel --exclude libggml* --require-archs arm64 -w wheelhouse/ -v dist/*
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --ignore-existing -w wheelhouse/ dist/*
 
-      - name: repair wheels (linux)
-        if: matrix.build.os == 'ubuntu-24.04'
-        run: |
-          uvx auditwheel repair --exclude libggml* -w wheelhouse/ dist/*
-
-      - name: repair wheels (macos)
-        if: matrix.build.os == 'macos-15'
-        run: |
-          uvx --from delocate delocate-wheel --exclude libggml* --require-archs arm64 -w wheelhouse/ -v dist/*
-
-      - name: repair wheels (windows)
-        if: matrix.build.os == 'windows-2022'
-        run: |
-          uvx delvewheel repair --ignore-existing -w wheelhouse/ dist/*
-
-      - name: upload artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: base-${{ matrix.build.os }}-${{ matrix.python }}-${{ strategy.job-index }}
-          path: wheelhouse/*
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
 
   upload_pypi:
-    needs: build
-    runs-on: ubuntu-24.04
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
-      - name: download artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          pattern: base-*
+          pattern: cibw-*
           path: dist
           merge-multiple: true
 
-      - name: publish package
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@release/v1
