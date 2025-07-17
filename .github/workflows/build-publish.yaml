@@ -33,9 +33,9 @@ jobs:
         uses: pypa/cibuildwheel@v3.0.1
         env:
           CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
-          CIBW_REPAIR_WHEEL_COMMAND_LINUX: auditwheel repair --exclude libggml* -w wheelhouse/ dist/*
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: delocate-wheel --exclude libggml* --require-archs arm64 -w wheelhouse/ -v dist/*
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --ignore-existing -w wheelhouse/ dist/*
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: auditwheel repair --exclude libggml* -w {dest_dir} {wheel}
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: delocate-wheel --exclude libggml* --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: delvewheel repair --ignore-existing -w {dest_dir} {wheel}
 
       - uses: actions/upload-artifact@v4
         with:
