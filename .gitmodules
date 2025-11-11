@@ -1,4 +1,4 @@
 [submodule "ggml"]
 	path = ggml
 	url = https://github.com/ggml-org/ggml
-	branch = main
+	branch = v0.9.4
