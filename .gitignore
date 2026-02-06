@@ -243,3 +243,6 @@ pyrightconfig.json
 
 # setuptools-scm
 _version.py
+
+# CMake
+CMakeFiles/
