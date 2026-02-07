@@ -31,6 +31,24 @@ sdist.include = ["ggml/", "src/libggml/_version.py"]
 
 [tool.scikit-build.cmake.define]
 CMAKE_RUNTIME_OUTPUT_DIRECTORY = "build"
+GGML_OPENMP = "OFF"
+GGML_VULKAN = "OFF"
+GGML_CUDA = "OFF"
+
+[[tool.scikit-build.overrides]]
+if.env.USE_VULKAN = true
+inherit.cmake.define = "append"
+cmake.define.GGML_VULKAN = "1"
+
+[[tool.scikit-build.overrides]]
+if.env.USE_CUDA = true
+inherit.cmake.define = "append"
+cmake.define.GGML_CUDA = "1"
+
+[[tool.scikit-build.overrides]]
+if.env.USE_OPENMP = true
+inherit.cmake.define = "append"
+cmake.define.GGML_OPENMP = "1"
 
 [project.entry-points."cmake.root"]
 ggml = "libggml"
@@ -54,3 +72,8 @@ repair-wheel-command = "delocate-wheel --exclude libggml* --require-archs {deloc
 [tool.cibuildwheel.windows]
 before-build = "pip install delvewheel"
 repair-wheel-command = "delvewheel repair --ignore-existing -w {dest_dir} {wheel}"
+
+[tool.uv]
+managed = true
+required-version = "~=0.9.0"
+index-url = "https://pypi.org/simple/"
