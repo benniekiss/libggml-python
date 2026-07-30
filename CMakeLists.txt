@@ -10,10 +10,12 @@ add_library(ggml::ggml ALIAS ggml)
 if(APPLE)
     target_link_options(ggml INTERFACE
         "$<INSTALL_INTERFACE:LINKER:-rpath,@loader_path/../libggml/lib>"
+        "$<INSTALL_INTERFACE:LINKER:-rpath,@loader_path/../../libggml/lib>"
     )
 elseif(UNIX)
     target_link_options(ggml INTERFACE
         "$<INSTALL_INTERFACE:LINKER:-rpath,$ORIGIN/../libggml/lib>"
+        "$<INSTALL_INTERFACE:LINKER:-rpath,$ORIGIN/../../libggml/lib>"
     )
 endif()
 
