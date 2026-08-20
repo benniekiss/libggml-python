@@ -45,9 +45,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - name: Build sdist
         run: pipx run build --sdist
+
+      - name: Verify sdist can build a wheel
+        run: python -m pip wheel --no-deps --wheel-dir /tmp/sdist-wheel dist/*.tar.gz
 
       - uses: actions/upload-artifact@v7
         with:
