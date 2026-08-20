@@ -8,7 +8,8 @@
     "prConcurrentLimit": 0,
     "enabledManagers": [
         "github-actions",
-        "git-submodules"
+        "git-submodules",
+        "pep621"
     ],
     "git-submodules": {
         "enabled": true
